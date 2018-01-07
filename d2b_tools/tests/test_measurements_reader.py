@@ -38,8 +38,27 @@ class TestUtilities(unittest.TestCase):
 
 
 class TestShot(unittest.TestCase):
-    pass
 
+    def test_default(self):
+        s = measurements_reader.Shot({})
+        self.assertEqual(len(s._detectors), 0)
+        self.assertEqual(len(s._detector_angle_calibration), 128)
+
+    def test_rightmost_angle(self):
+        s = measurements_reader.Shot({'anglesx1000': 2})
+        self.assertEqual(s.rightmost_angle, 2)
+
+    def test_monitor(self):
+        s = measurements_reader.Shot({'monitor': 5e5})
+        self.assertAlmostEqual(s.monitor, 5e5, 10)
+
+    def test_add_detector_measurment(self):
+        s = measurements_reader.Shot({'anglesx1000': 0, 'monitor': 5e5})
+        s.add_detector_measurement(0, [0, 1, 2])
+        detectors = s.get_detector_measurments()
+        self.assertEqual(len(detectors), 1)
+        self.assertAlmostEqual(detectors[0]._monitor, 5e5, 10)
+        self.assertEqual(detectors[0]._number, 0)
 
 class TestMeasurementReader(unittest.TestCase):
 

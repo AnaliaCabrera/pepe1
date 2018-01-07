@@ -67,13 +67,15 @@ class Detector:
         self._counts = counts
         self._monitor = monitor
 
+    def __str__(self):
+        return 'Detector {}, at angle {}, with monitor {} has {} counts'.format(self._number,
+                                                                                self._angle,
+                                                                                self._monitor,
+                                                                                len(self._counts))
 
 class Shot:
 
     SEGMENT_HEADER_SEPARATOR = 'I'*80
-
-    # :param detector_angle_calibration: Angular distance from the rightmost detector to every detector.
-    #     The list should have 128 values, with the last value being 0.
 
     @property
     def rightmost_angle(self):
@@ -125,8 +127,12 @@ class Shot:
     def get_detector_measurments(self):
         return self._detectors
 
-    def set_detector_calibration(self, detector_calibration):
-        self._detector_angle_calibration = detector_calibration
+    def set_detector_calibration(self, detector_angle_calibration):
+        '''
+        :param detector_angle_calibration: Angular distance from the rightmost detector to every detector.
+             The list should have 128 values, with the last value being 0.
+        '''
+        self._detector_angle_calibration = detector_angle_calibration
 
     def get_detector_angle(self, detector_number):
         return self.rightmost_angle - self._detector_angle_calibration[detector_number]
