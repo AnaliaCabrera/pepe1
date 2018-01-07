@@ -1,5 +1,32 @@
 # Installation
 
+## Using Anaconda in Windows
+
+In Windows Anaconda provides some tools to simplify the setup.
+
+Install Anaconda3 [their installer](https://repo.continuum.io/archive/Anaconda3-5.0.1-Windows-x86_64.exe)
+
+Once installed you will find an `Anaconda Prompt` program in the windows menu. All the following commands should be typed into this `Anaconda Prompt` shell.
+
+1. Create a new environment for this package
+```
+$ conda create --name d2benv python=3.6
+```
+2. Activate the new environment
+```
+$ activate d2benv
+```
+3. Move to the cloned directory, d2b_tools folder:
+```
+$ cd C:\....\pepe1\d2b_tools
+```
+3. Install requirements:
+```
+$ conda install --yes --file requirements.txt
+```
+
+## Using virtualenv in Linux
+
 1. Create a python 3 virtualenv
 ```
 $ pyvenv d2benv
