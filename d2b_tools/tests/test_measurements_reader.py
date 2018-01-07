@@ -53,12 +53,25 @@ class TestShot(unittest.TestCase):
         self.assertAlmostEqual(s.monitor, 5e5, 10)
 
     def test_add_detector_measurment(self):
-        s = measurements_reader.Shot({'anglesx1000': 0, 'monitor': 5e5})
+        s = measurements_reader.Shot({'anglesx1000': 10, 'monitor': 5e5})
         s.add_detector_measurement(0, [0, 1, 2])
         detectors = s.get_detector_measurments()
         self.assertEqual(len(detectors), 1)
         self.assertAlmostEqual(detectors[0]._monitor, 5e5, 10)
         self.assertEqual(detectors[0]._number, 0)
+        self.assertAlmostEqual(detectors[0]._angle, 10, 10)
+
+    def test_get_detector_angle(self):
+        s = measurements_reader.Shot({'anglesx1000': 10, 'monitor': 5e5})
+        s.set_detector_calibration([-4, -2, 0])
+        self.assertEqual(s.get_detector_angle(0), 10)
+        self.assertEqual(s.get_detector_angle(1), 8)
+        self.assertEqual(s.get_detector_angle(2), 6)
+
+    def test_get_detector_angle_default(self):
+        s = measurements_reader.Shot({'anglesx1000': 10, 'monitor': 5e5})
+        self.assertEqual(s.get_detector_angle(0), 10)
+
 
 class TestMeasurementReader(unittest.TestCase):
 
