@@ -24,6 +24,17 @@ $ cd C:\....\pepe1\d2b_tools
 ```
 $ conda install --yes --file requirements.txt
 ```
+4. In  the same directory, run 
+```
+$ pip install -e .
+```
+5. Run the tests
+```
+$ cd tests
+$ python test_measurements_reader.py
+```
+#Run test after instalation
+Repeat point 2. and 5.
 
 ## Using virtualenv in Linux
 
