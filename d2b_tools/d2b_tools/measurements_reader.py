@@ -163,8 +163,12 @@ class MeasurementsReader:
 
 def integration_test():
     mr = MeasurementsReader()
-    shots = mr.get_measurments_segments('../tests/data/sample_input.txt')
-    print (len(shots))
+    shots = mr.read_file('../tests/data/sample_input.txt')
+    print ('Found {} shots in the file'.format(len(shots)))
+    for shot_number, shot in enumerate(shots):
+        print ('- Shot number: {}'.format(shot_number))
+        for detector in shot.get_detector_measurments():
+            print ('* {}'.format(detector))
 
 if __name__ == '__main__':
     integration_test()
