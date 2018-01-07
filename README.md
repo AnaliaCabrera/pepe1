@@ -10,11 +10,11 @@ Once installed you will find an `Anaconda Prompt` program in the windows menu. A
 
 1. Create a new environment for this package
 ```
-$ conda create --name d2benv python=3.6
+$ conda create --name d2b_env python=3.6
 ```
 2. Activate the new environment
 ```
-$ activate d2benv
+$ activate d2b_env
 ```
 3. Move to the cloned directory, d2b_tools folder:
 ```
