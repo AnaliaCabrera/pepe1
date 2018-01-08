@@ -9,7 +9,7 @@ We represent the detectors as:
 * Detector 0 is the rightmost detector, detector 127 is the leftmost one.
 * Pixel 0 is the lowest pixel and pixel 127 is the hightest one.
 
-This code asumes that the count information is writen is shown in the following
+This code assumes that the count information is written is shown in the following
 diagram:
 
 16384   \/<<<<<<<^        <<<^
@@ -84,16 +84,20 @@ def get_counts(segment_header_separator, rightmost_angle, segment):
 class Detector:
 
     def __init__(self, number, monitor, angle, counts):
-        self._number = number
-        self._angle = angle
-        self._counts = counts
-        self._monitor = monitor
+        self.number = number
+        self.angle = angle
+        self.counts = counts
+        self.monitor = monitor
 
     def __str__(self):
-        return 'Detector {}, at angle {}, with monitor {} has {} counts'.format(self._number,
-                                                                                self._angle,
-                                                                                self._monitor,
-                                                                                len(self._counts))
+        '''
+        This method wive a format to a return of this class
+        ATENTION self._counts have the counts for each pixel but we show only the length of this counts that is equivalent at the number of pixel
+        '''
+        return 'Detector {}, at angle {}, with monitor {} has {} counts'.format(self.number,
+                                                                                self.angle,
+                                                                                self.monitor,
+                                                                                len(self.counts))
 
 class Shot:
 
@@ -101,18 +105,19 @@ class Shot:
 
     @property
     def rightmost_angle(self):
-        return self._metadata['anglesx1000']
+        return self._metadata['anglesx1000']/1e3
 
     @property
     def monitor(self):
-        return self._metadata['monitor']
+        return self._metadata['monitor']/1e6
 
     @classmethod
     def from_measurement_string(cls, segment_string):
-        metadata = get_metadata(cls.SEGMENT_HEADER_SEPARATOR, segment_string)
+        metadata = get_metadata(cls.SEGMENT_HEADER_SEPARATOR, segment_string)       
         shot = Shot(metadata)
         shot_counts = get_counts(cls.SEGMENT_HEADER_SEPARATOR, shot.rightmost_angle, segment_string)
         for number, counts in enumerate(shot_counts):
+            #counts en realidad viene y es pixel_and_detector_amount esto se arrastra
             shot.add_detector_measurement(number, counts)
         return shot
 
@@ -152,6 +157,10 @@ class MeasurementsReader:
         return file_data.split(self.SEPARATOR_STRING)[self.SEGMENTS_TO_SKIP:]
 
     def read_file(self, file_name):
+        '''
+        Open the file_name and then with (1.1) get_measurments_segments(file_data) obtein segments 
+        With each segment 
+        '''
         with open(file_name, 'r') as infile:
             file_data = infile.read()
         shot_file_segments = self.get_measurments_segments(file_data)
@@ -162,13 +171,24 @@ class MeasurementsReader:
 
 
 def integration_test():
+    '''
+    This is a test of the integration of the diferent function in this document
+    Start using the Class MeasurementsReader() as mr and then call the method read_file (1) 
+    and returns shots
+    Then (2) for any shots we will show the return from the Class Shot and the 
+    method: get_detector_measurments() the detector_number, self.monitor, angle, counts(que no son las cuentas realmente)
+    
+    '''
     mr = MeasurementsReader()
     shots = mr.read_file('../tests/data/sample_input.txt')
     print ('Found {} shots in the file'.format(len(shots)))
+    '''
     for shot_number, shot in enumerate(shots):
         print ('- Shot number: {}'.format(shot_number))
         for detector in shot.get_detector_measurments():
             print ('* {}'.format(detector))
+    '''
+    return shots
 
 if __name__ == '__main__':
     integration_test()
