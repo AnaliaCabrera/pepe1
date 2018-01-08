@@ -59,9 +59,9 @@ def pixel_per_detector_generator(all_counts, pixel_amount):
     :param all_counts: All the counts of the measurement (128 detectors * 128 pixels per detector)
     :param pixel_amount: The number of pixels per detector (all detectors have the same number of pixels)
     '''
-    for detector in range(0, len(all_counts), pixel_amount):
-        pixels = all_counts[detector:detector + pixel_amount]
-        if detector%2 != 0:
+    for first_pixel in range(0, len(all_counts), pixel_amount):
+        pixels = all_counts[first_pixel:first_pixel + pixel_amount]
+        if int(first_pixel/pixel_amount)%2 != 0:
             pixels.reverse()
         yield pixels
 
