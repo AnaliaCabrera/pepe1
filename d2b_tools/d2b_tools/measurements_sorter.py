@@ -120,15 +120,11 @@ class DetectorSorter:
         return matrix_weighted
     
     
-    def to_search_efficiency_raw(self):
+    def integration_test_sorter(self):
         matrix_weighted = self.to_matrix()
         matrix_per_detector = self.generate_detector_matrix()
-        for a in range(20,60):
-            efficency_raw=np.divide(matrix_weighted, matrix_per_detector[a])
-        plt.figure(200)
-        plt.imshow(efficency_raw,clim=(0.5,1.5))
-        plt.figure(200+1)
-        plt.hist(efficency_raw.ravel(), bins=266, range=(0.01, 2), fc='k', ec='k')
+        return matrix_per_detector, matrix_weighted
+    
 if __name__ == '__main__':
     from d2b_tools import measurements_reader
     shots = measurements_reader.integration_test()
