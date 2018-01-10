@@ -26,7 +26,10 @@ The first number is the count reading of the lowest pixel of the rightmost detec
 The last number is the highest reading of the leftmost detector.
 
 '''
+import argparse
 import math
+import os
+import pickle
 
 DEFAULT_CALIBRATION = [-158.750, -157.500, -156.250, -155.000, -153.750, -152.500,
                        -151.250, -150.000, -148.750, -147.500, -146.250, -145.000,
@@ -167,6 +170,7 @@ class MeasurementsReader:
         for shot_segment in shot_file_segments:
             self._shots.append(Shot.from_measurement_string(shot_segment))
 
+    def get_shots(self):
         return self._shots
 
 
@@ -180,7 +184,7 @@ def integration_test():
     
     '''
     mr = MeasurementsReader()
-    shots = mr.read_file('../tests/data/sample_input.txt')
+    mr.read_file('../tests/data/sample_input.txt')
     print ('Found {} shots in the file'.format(len(shots)))
     '''
     for shot_number, shot in enumerate(shots):
@@ -188,7 +192,21 @@ def integration_test():
         for detector in shot.get_detector_measurments():
             print ('* {}'.format(detector))
     '''
-    return shots
+    return mr.get_shots()
 
 if __name__ == '__main__':
-    integration_test()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("files", nargs='+', help="List of files to import.")
+    parser.add_argument("-o", "--output", help="Output file.")
+    args = parser.parse_args()
+
+
+    full_paths = [os.path.join(os.getcwd(), file_path) for file_path in args.files]
+
+    reader = MeasurementsReader()
+
+    for input_file in full_paths:
+        reader.read_file(input_file)
+    
+    with open(args.output, 'wb') as output:
+        output.write(pickle.dumps(reader.get_shots()))
