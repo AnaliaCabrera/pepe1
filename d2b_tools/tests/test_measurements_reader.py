@@ -92,7 +92,8 @@ class TestMeasurementReader(unittest.TestCase):
             self.assertTrue(any(['I'*80 in line for line in segment.split('\n')]))
 
     def test_read_file(self):
-        measurements = self.mr_.read_file('data/sample_input.txt')
+        self.mr_.read_file('data/sample_input.txt')
+        measurements = self.mr_.get_shots()
         self.assertEqual(len(measurements), 25)
 
 
