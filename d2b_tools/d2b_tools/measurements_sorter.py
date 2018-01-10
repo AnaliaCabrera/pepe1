@@ -4,8 +4,10 @@ Created on Mon Jan  8 04:36:56 2018
 
 @author: Ana Cabrera
 """
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 
 class DetectorSorter:
     MATRIX_RESOLUTION = 0.05
@@ -21,9 +23,6 @@ class DetectorSorter:
         self.columns = int((self.max_angle - self.min_angle) / self.MATRIX_RESOLUTION )+3
         self.rows = 128
         
-
-        
-    
     def detector_iterator(self):
         for shot in self._shot_list:
             for detector in shot.get_detector_measurments():
@@ -40,7 +39,6 @@ class DetectorSorter:
         #print(detectors_per_angle)
         return detectors_per_angle
       
-    
     def order_per_detector_number(self):
         detectors_per_number = {}
         for detector in self.detector_iterator():
@@ -49,10 +47,7 @@ class DetectorSorter:
             else:
                 detectors_per_number[detector.number] = [detector]
             
-
-        #print(detectors_per_angle)
         return detectors_per_number
-                
     
     def generate_detector_matrix(self):
         #nuevo
@@ -73,18 +68,6 @@ class DetectorSorter:
         matrix_weighted_per_detector = np.divide(matrix_per_detector, matrix_weight_per_detector,out=np.zeros_like(matrix_per_detector), where = matrix_weight_per_detector != 0 )    
         #muestra donde se superpondrian
         superposted=np.sum(matrix_weighted_per_detector,axis=0)
-        '''
-        plt.figure(10)
-        plt.imshow(matrix_weighted_per_detector[18],clim=(0.1,60))
-        
-        plt.figure(12)
-        plt.imshow(matrix_weight_per_detector[18])
-        '''
-        plt.figure(13)
-        plt.imshow(superposted,clim=(0.1,60))
-        
-        plt.figure(11)
-        plt.imshow(matrix_weighted_per_detector[120],clim=(0.1,60))            
         
         return matrix_per_detector
     
@@ -105,31 +88,31 @@ class DetectorSorter:
                 matrix_weight[:,base_index + 1] += [(next_weight)]*128
         
         matrix_weighted = np.divide(matrix, matrix_weight,out=np.zeros_like(matrix), where = matrix_weight != 0 )    
-        
-        print(matrix_weighted)
-        plt.figure(0)
-        plt.imshow(matrix_weighted,clim=(0.1,60))
-        '''
-        plt.figure(1)
-        plt.hist(matrix_weighted.ravel(), bins=266, range=(0.01, 40), fc='k', ec='k')
-        plt.figure(2)
-        plt.hist(matrix_weight.ravel(), bins=266, range=(0.01, 40), fc='k', ec='k')
-        plt.figure(3)
-        plt.hist(matrix.ravel(), bins=266, range=(0.01, 40), fc='k', ec='k')
-        '''
-        return matrix_weighted
+        return matrix_weighted, matrix
     
-    
-    def integration_test_sorter(self):
-        matrix_weighted = self.to_matrix()
-        matrix_per_detector = self.generate_detector_matrix()
-        return matrix_per_detector, matrix_weighted
     
 if __name__ == '__main__':
-    from d2b_tools import measurements_reader
-    shots = measurements_reader.integration_test()
-    ds = DetectorSorter(shots)
-    ds.order_per_angle()
-    ds.to_matrix()
-    ds.generate_detector_matrix()
-    ds.to_search_efficiency_raw()
+    from d2b_tools.measurements_reader import Detector, Shot
+    parser = argparse.ArgumentParser()
+    parser.add_argument("shots_file", help="Pickled shots file to import.")
+    parser.add_argument("-o", "--output", help="Output file.")
+    parser.add_argument("-p", "--plot", action="store_true", help="Plot matrix and weighted matrix.")
+    args = parser.parse_args()
+
+    with open(args.shots_file, 'rb') as input_file:
+        shots = pickle.load(input_file)
+
+    sorter = DetectorSorter(shots)
+    matrix_weighted, matrix = sorter.to_matrix()
+    matrix_per_detector = sorter.generate_detector_matrix()
+
+    if args.output is not None:
+        with open(args.output, 'wb') as output:
+            output.write(pickle.dumps((matrix, matrix_per_detector)))
+
+    if args.plot:
+        plt.figure(0)
+        plt.matshow(matrix_weighted, clim=(0.1, 60))
+        plt.figure(1)
+        plt.matshow(matrix, clim=(0.1, 60))
+        plt.show()
