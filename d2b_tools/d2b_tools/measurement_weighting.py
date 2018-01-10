@@ -4,9 +4,10 @@ Created on Tue Jan  9 00:15:56 2018
 
 @author: Ana Cabrera
 """
-
-import numpy as np
+import argparse
 import matplotlib.pyplot as plt
+import numpy as np
+import pickle
  
 
 def to_search_efficiency_raw(matrix_weighted,matrix_per_detector):
@@ -58,12 +59,15 @@ def weight_by_position_of_detector(D):
     
     
 if __name__ == '__main__':
-    '''
-    de d2b_tools importo el metodo, luego instancio un objeto de una clase dentro de ese metodo y luego con ese objeto puedo llamar a las funciones
-    '''
-    from d2b_tools import measurements_reader, measurements_sorter
-    shots = measurements_reader.integration_test()
-    ds = measurements_sorter.DetectorSorter(shots)
-    matrix_per_detector, matrix_weighted = ds.integration_test_sorter()
-    efficency_raw = to_search_efficiency_raw(matrix_weighted,matrix_per_detector)
+    #from d2b_tools.measurements_reader import Detector, Shot
+    #from d2b_tools.measurements_sorter import DetectorSorter
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("sorted_file", help="Measurements sorted file to import.")
+    args = parser.parse_args()
+
+    with open(args.sorted_file, 'rb') as input_file:
+        matrix, matrix_per_detector = pickle.load(input_file)
+
+    efficency_raw = to_search_efficiency_raw(matrix, matrix_per_detector)
     weight_by_position_of_detector(efficency_raw)
