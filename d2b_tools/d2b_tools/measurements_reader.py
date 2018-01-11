@@ -64,7 +64,7 @@ def pixel_per_detector_generator(all_counts, pixel_amount):
     '''
     for first_pixel in range(0, len(all_counts), pixel_amount):
         pixels = all_counts[first_pixel:first_pixel + pixel_amount]
-        if int(first_pixel/pixel_amount)%2 != 0:
+        if int(first_pixel/pixel_amount)%2 == 0:
             pixels.reverse()
         yield pixels
 
