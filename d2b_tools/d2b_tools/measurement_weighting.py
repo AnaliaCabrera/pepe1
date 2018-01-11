@@ -17,10 +17,12 @@ def to_search_efficiency_raw(matrix_weighted,matrix_per_detector):
     efficency_raw=np.zeros((T,X,Y))
     for a in range(0,T):
         efficency_raw[a]=np.divide(matrix_weighted, matrix_per_detector[a], out=np.zeros_like(matrix_weighted), where=matrix_per_detector[a]!=0)
+    """
     plt.figure(200)
     plt.imshow(efficency_raw[60],clim=(0.5,1.5))
     plt.figure(200+1)
     plt.hist(efficency_raw[60].ravel(), bins=266, range=(0.01, 4), fc='k', ec='k')
+    """
     return efficency_raw
 
 def weight_per_inverse_of_relative_error(matrix_weighted):
@@ -54,8 +56,10 @@ def weight_by_position_of_detector(D):
     Ideal1=np.divide(E1, Wt1 ,out=np.zeros_like(E1),where=Wt1!=0)
     print(len(Ideal1))
     print(len(Ideal1[0]))
+    """
     plt.figure(300)
     plt.imshow(Ideal1,clim=(0.75,2))
+    """
     
     
 if __name__ == '__main__':

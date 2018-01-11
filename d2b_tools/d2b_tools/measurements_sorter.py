@@ -111,8 +111,10 @@ if __name__ == '__main__':
             output.write(pickle.dumps((matrix, matrix_per_detector)))
 
     if args.plot:
-        plt.figure(0)
-        plt.matshow(matrix_weighted, clim=(0.1, 60))
-        plt.figure(1)
-        plt.matshow(matrix, clim=(0.1, 60))
+        plt.matshow(matrix_weighted)
+        plt.title('matrix_weighted')
+        plt.matshow(matrix)
+        plt.title('matrix')
+        plt.matshow(matrix2)
+        plt.title('matrix2')
         plt.show()
