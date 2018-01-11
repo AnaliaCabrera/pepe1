@@ -73,6 +73,7 @@ class DetectorSorter:
     
     def to_matrix(self):
         matrix = np.zeros((self.rows, self.columns))
+        matrix2 = np.zeros((self.rows, self.columns))
         matrix_weight = np.zeros((self.rows, self.columns))
         for angle, detectors in self.detectors_per_angle.items():
             
@@ -83,12 +84,13 @@ class DetectorSorter:
             for detector in detectors:
                 matrix[:,base_index] += (np.array(detector.counts)*(1-next_weight))/detector.monitor
                 matrix[:,base_index + 1] += (np.array(detector.counts)*(next_weight))/detector.monitor
+                matrix2[:,base_index] += np.array(detector.counts)
               
                 matrix_weight[:,base_index] += [(1-next_weight)]*128
                 matrix_weight[:,base_index + 1] += [(next_weight)]*128
         
         matrix_weighted = np.divide(matrix, matrix_weight,out=np.zeros_like(matrix), where = matrix_weight != 0 )    
-        return matrix_weighted, matrix
+        return matrix_weighted, matrix, matrix2
     
     
 if __name__ == '__main__':
@@ -103,7 +105,7 @@ if __name__ == '__main__':
         shots = pickle.load(input_file)
 
     sorter = DetectorSorter(shots)
-    matrix_weighted, matrix = sorter.to_matrix()
+    matrix_weighted, matrix, matrix2 = sorter.to_matrix()
     matrix_per_detector = sorter.generate_detector_matrix()
 
     if args.output is not None:
