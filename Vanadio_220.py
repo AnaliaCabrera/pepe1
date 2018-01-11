@@ -1,4 +1,4 @@
-    
+
 
 # -*- coding: utf-8 -*-
 """
@@ -12,8 +12,8 @@ Created on Wed Oct 11 11:38:23 2017
 
 import numpy as np
 import matplotlib.pyplot as plt
-from Prom_Ponderado import Prom_Ponderado 
-from Prom_Ponderado_detector import Prom_Ponderado_detector 
+from Prom_Ponderado import Prom_Ponderado
+from Prom_Ponderado_detector import Prom_Ponderado_detector
 
 
 plt.close('all')

@@ -8,7 +8,7 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
- 
+
 
 def to_search_efficiency_raw(matrix_weighted,matrix_per_detector):
     T=len(matrix_per_detector)
@@ -27,7 +27,7 @@ def to_search_efficiency_raw(matrix_weighted,matrix_per_detector):
 
 def weight_per_inverse_of_relative_error(matrix_weighted):
     print(matrix_weighted)
-    
+
 
 def calculation_inverse_of_relative_error():
     pass
@@ -44,24 +44,22 @@ def weight_by_position_of_detector(D):
     for i in range(T):
         #M[i] = np.multiply(D[i], W[i])
         M1[i] = np.multiply(D[i], W1[i])
-     
+
     #E = np.sum(M, axis=2)
     #Wt = np.sum(W, axis=2)
-     
+
     E1 = np.sum(M1, axis=2)
     Wt1 = np.sum(W1, axis=2)
-    
-    
+
+
     #Ideal=np.divide(E, Wt,out=np.zeros_like(E), where=Wt!=0)
     Ideal1=np.divide(E1, Wt1 ,out=np.zeros_like(E1),where=Wt1!=0)
     print(len(Ideal1))
     print(len(Ideal1[0]))
-    """
-    plt.figure(300)
-    plt.imshow(Ideal1,clim=(0.75,2))
-    """
-    
-    
+    plt.matshow(Ideal1,clim=(0.75,2))
+    plt.title('Eficiencia')
+
+
 if __name__ == '__main__':
     #from d2b_tools.measurements_reader import Detector, Shot
     #from d2b_tools.measurements_sorter import DetectorSorter
@@ -71,7 +69,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     with open(args.sorted_file, 'rb') as input_file:
-        matrix, matrix_per_detector = pickle.load(input_file)
+        matrix_weighted, matrix_total, matrix_per_detector = pickle.load(input_file)
 
-    efficency_raw = to_search_efficiency_raw(matrix, matrix_per_detector)
+    efficency_raw = to_search_efficiency_raw(matrix_weighted, matrix_per_detector)
     weight_by_position_of_detector(efficency_raw)
+    plt.show()

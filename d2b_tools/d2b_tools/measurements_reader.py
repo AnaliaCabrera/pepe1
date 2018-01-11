@@ -64,7 +64,10 @@ def pixel_per_detector_generator(all_counts, pixel_amount):
     '''
     for first_pixel in range(0, len(all_counts), pixel_amount):
         pixels = all_counts[first_pixel:first_pixel + pixel_amount]
-        if int(first_pixel/pixel_amount)%2 == 0:
+        # When using != we assume that the lowest pixel is on the index 0.
+        # If we use == we assume that the highest pixel is on the index 0
+        # '2': correlate with comment '1' on measurement_sorter.py
+        if int(first_pixel/pixel_amount)%2 != 0:
             pixels.reverse()
         yield pixels
 
@@ -81,7 +84,7 @@ def get_counts(segment_header_separator, rightmost_angle, segment):
     counts_string = counts_string.replace('\n', ' ')
     all_counts = [int(val) for val in counts_string.split()]
     pixel_and_detector_amount = int(math.sqrt(all_counts[0]))
-    return list(pixel_per_detector_generator(all_counts[2:], pixel_and_detector_amount))
+    return pixel_per_detector_generator(all_counts[2:], pixel_and_detector_amount)
 
 
 class Detector:
@@ -116,7 +119,7 @@ class Shot:
 
     @classmethod
     def from_measurement_string(cls, segment_string):
-        metadata = get_metadata(cls.SEGMENT_HEADER_SEPARATOR, segment_string)       
+        metadata = get_metadata(cls.SEGMENT_HEADER_SEPARATOR, segment_string)
         shot = Shot(metadata)
         shot_counts = get_counts(cls.SEGMENT_HEADER_SEPARATOR, shot.rightmost_angle, segment_string)
         for number, counts in enumerate(shot_counts):
@@ -144,7 +147,10 @@ class Shot:
         self._detector_angle_calibration = detector_angle_calibration
 
     def get_detector_angle(self, detector_number):
-        return self.rightmost_angle + self._detector_angle_calibration[-detector_number-1]
+        # This line assumes that detector 0 is the rightmost
+        # return self.rightmost_angle + self._detector_angle_calibration[-detector_number-1]
+        # This line assumes that detector 0 is the leftmost
+        return self.rightmost_angle + self._detector_angle_calibration[detector_number]
 
 
 
@@ -161,8 +167,8 @@ class MeasurementsReader:
 
     def read_file(self, file_name):
         '''
-        Open the file_name and then with (1.1) get_measurments_segments(file_data) obtein segments 
-        With each segment 
+        Open the file_name and then with (1.1) get_measurments_segments(file_data) obtein segments
+        With each segment
         '''
         with open(file_name, 'r') as infile:
             file_data = infile.read()
@@ -177,11 +183,11 @@ class MeasurementsReader:
 def integration_test():
     '''
     This is a test of the integration of the diferent function in this document
-    Start using the Class MeasurementsReader() as mr and then call the method read_file (1) 
+    Start using the Class MeasurementsReader() as mr and then call the method read_file (1)
     and returns shots
-    Then (2) for any shots we will show the return from the Class Shot and the 
+    Then (2) for any shots we will show the return from the Class Shot and the
     method: get_detector_measurments() the detector_number, self.monitor, angle, counts(que no son las cuentas realmente)
-    
+
     '''
     mr = MeasurementsReader()
     mr.read_file('../tests/data/sample_input.txt')
@@ -207,6 +213,6 @@ if __name__ == '__main__':
 
     for input_file in full_paths:
         reader.read_file(input_file)
-    
+
     with open(args.output, 'wb') as output:
         output.write(pickle.dumps(reader.get_shots()))

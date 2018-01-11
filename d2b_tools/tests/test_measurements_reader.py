@@ -28,16 +28,17 @@ class TestUtilities(unittest.TestCase):
         segment = self.read_sample_segment()
         counts = measurements_reader.get_counts(measurements_reader.Shot.SEGMENT_HEADER_SEPARATOR,
                                                 1.31246000e5, segment)
+        counts = list(counts)
         self.assertEqual(len(counts), 128)
         self.assertEqual(len(counts[0]), 128)
 
+    #@unittest.skip('ignoring')
     def test_pixel_per_detector_generator(self):
         test_list = [4,6,2,4,1,8,8,3,5,3,0,1,4,8,9,0,6,9,3,2]
         output = list(measurements_reader.pixel_per_detector_generator(test_list, 4))
         self.assertListEqual(output, [[4,6,2,4], [3,8,8,1], [5,3,0,1], [0,9,8,4],[6,9,3,2]])
-        #import numpy as np 
-        print(output)
-        
+
+
 class TestShot(unittest.TestCase):
 
     def test_default(self):
@@ -54,24 +55,24 @@ class TestShot(unittest.TestCase):
         self.assertAlmostEqual(s.monitor, 0.5, 10)
 
     def test_add_detector_measurment(self):
-        s = measurements_reader.Shot({'anglesx1000': 10, 'monitor': 5e5})
+        s = measurements_reader.Shot({'anglesx1000': 10e3, 'monitor': 5e5})
         s.add_detector_measurement(0, [0, 1, 2])
         detectors = s.get_detector_measurments()
         self.assertEqual(len(detectors), 1)
         self.assertAlmostEqual(detectors[0].monitor, 0.5, 10)
         self.assertEqual(detectors[0].number, 0)
-        self.assertAlmostEqual(detectors[0].angle, 10/1e3, 10)
+        self.assertAlmostEqual(detectors[0].angle, -148.75, 10)
 
     def test_get_detector_angle(self):
-        s = measurements_reader.Shot({'anglesx1000': 10, 'monitor': 5e5})
-        s.set_detector_calibration([-4/1e3, -2/1e3, 0])
-        self.assertEqual(s.get_detector_angle(0), 10/1e3)
-        self.assertEqual(s.get_detector_angle(1), 8/1e3)
-        self.assertEqual(s.get_detector_angle(2), 6/1e3)
+        s = measurements_reader.Shot({'anglesx1000': 10e3, 'monitor': 5e5})
+        s.set_detector_calibration([-4, -2, 0])
+        self.assertEqual(s.get_detector_angle(0), 6)
+        self.assertEqual(s.get_detector_angle(1), 8)
+        self.assertEqual(s.get_detector_angle(2), 10)
 
     def test_get_detector_angle_default(self):
-        s = measurements_reader.Shot({'anglesx1000': 10, 'monitor': 5e5})
-        self.assertEqual(s.get_detector_angle(0), 10/1e3)
+        s = measurements_reader.Shot({'anglesx1000': 10e3, 'monitor': 5e5})
+        self.assertEqual(s.get_detector_angle(127), 10)
 
 
 class TestMeasurementReader(unittest.TestCase):
